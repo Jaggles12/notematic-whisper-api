@@ -1,19 +1,14 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import whisper
-import tempfile
-
-app = Flask(__name__)
-CORS(app)
-
-model = whisper.load_model("tiny")  # Fast to load
-
-@app.route('/')
-def home():
-    return "Whisper Transcriber is running."
-
-@app.route("/asr", methods=["POST"])
+@app.route("/asr", methods=["GET", "POST"])
 def transcribe():
+    if request.method == "GET":
+        return '''
+            <h1>Upload an Audio File</h1>
+            <form method="POST" enctype="multipart/form-data">
+              <input type="file" name="audio_file">
+              <input type="submit" value="Transcribe">
+            </form>
+        '''
+
     if 'audio_file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
 
@@ -23,6 +18,3 @@ def transcribe():
         file.save(temp_file.name)
         result = model.transcribe(temp_file.name)
         return jsonify({"text": result["text"]})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
