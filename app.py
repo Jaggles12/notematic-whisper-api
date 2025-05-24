@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load the Whisper model (use "tiny" for faster startup)
-model = whisper.load_model("tiny")
+model = whisper.load_model("tiny.en")
 
 @app.route("/asr", methods=["GET", "POST"])
 def transcribe():
